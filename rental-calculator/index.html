@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rental Item Fee Calculator | VillaReference Tools</title>
+
+  <style>
+    :root {
+      --navy: #18324a;
+      --navy-dark: #102538;
+      --gold: #c9a45c;
+      --cream: #f7f5f0;
+      --white: #ffffff;
+      --text: #24313d;
+      --muted: #6f7b85;
+      --border: #dfe4e8;
+      --light-blue: #eef4f8;
+      --success: #2f7657;
+      --shadow: 0 12px 35px rgba(16, 37, 56, 0.10);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f7f5f0 0%, #edf2f5 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+    }
+
+    .page {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 42px 20px 60px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 32px;
+      line-height: 1.15;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      margin: 10px auto 0;
+      max-width: 580px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .calculator {
+      background: var(--white);
+      border: 1px solid rgba(24, 50, 74, 0.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .calculator-body {
+      padding: 30px;
+    }
+
+    .field {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .label-note {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 400;
+      margin-left: 5px;
+    }
+
+    /* Searchable dropdown */
+
+    .combo {
+      position: relative;
+    }
+
+    .combo-input {
+      width: 100%;
+      height: 52px;
+      padding: 0 48px 0 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--white);
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .combo-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201, 164, 92, 0.15);
+    }
+
+    .combo-arrow {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 48px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      pointer-events: none;
+      font-size: 14px;
+    }
+
+    .dropdown {
+      position: absolute;
+      z-index: 20;
+      left: 0;
+      right: 0;
+      top: calc(100% + 5px);
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(16, 37, 56, 0.15);
+      max-height: 340px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .dropdown.open {
+      display: block;
+    }
+
+    .category-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding: 8px 14px;
+      background: var(--light-blue);
+      color: var(--navy);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      border-bottom: 1px solid #dbe5eb;
+    }
+
+    .option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.15s;
+    }
+
+    .option:hover,
+    .option.highlighted {
+      background: #f5f8fa;
+    }
+
+    .option-name {
+      color: var(--text);
+    }
+
+    .option-price {
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .no-results {
+      padding: 18px 14px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    /* Reservation days */
+
+    .days-input {
+      width: 100%;
+      height: 52px;
+      padding: 0 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--white);
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .days-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201, 164, 92, 0.15);
+    }
+
+    .helper {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    /* Result */
+
+    .result {
+      display: none;
+      margin-top: 30px;
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
+    }
+
+    .result.visible {
+      display: block;
+    }
+
+    .result-label {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .result-amount {
+      text-align: center;
+      color: var(--navy);
+      font-size: 48px;
+      line-height: 1.1;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .result-note {
+      text-align: center;
+      color: var(--success);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .breakdown {
+      background: #f8fafb;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .breakdown-row:last-child {
+      border-bottom: none;
+    }
+
+    .breakdown-label {
+      color: var(--muted);
+    }
+
+    .breakdown-value {
+      color: var(--navy);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .copy-button {
+      width: 100%;
+      height: 48px;
+      margin-top: 16px;
+      border: none;
+      border-radius: 9px;
+      background: var(--navy);
+      color: var(--white);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .copy-button:hover {
+      background: var(--navy-dark);
+    }
+
+    .copy-button:active {
+      transform: translateY(1px);
+    }
+
+    .copy-button.copied {
+      background: var(--success);
+    }
+
+    .footer-note {
+      margin-top: 22px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        padding: 28px 14px 45px;
+      }
+
+      .calculator-body {
+        padding: 22px 18px;
+      }
+
+      h1 {
+        font-size: 27px;
+      }
+
+      .result-amount {
+        font-size: 40px;
+      }
+
+      .dropdown {
+        max-height: 300px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <header class="header">
+      <div class="eyebrow">VillaReference Tools</div>
+
+      <h1>Rental Item Fee Calculator</h1>
+
+      <p class="subtitle">
+        Calculate the pre-tax rental fee to post directly into Track or Opera.
+      </p>
+    </header>
+
+
+    <section class="calculator">
+
+      <div class="calculator-body">
+
+        <!-- RENTAL ITEM -->
+
+        <div class="field">
+
+          <label for="rentalSearch">
+            Rental Item
+            <span class="label-note">Search or select</span>
+          </label>
+
+          <div class="combo" id="combo">
+
+            <input
+              type="text"
+              id="rentalSearch"
+              class="combo-input"
+              placeholder="Type to search rental items..."
+              autocomplete="off"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+            >
+
+            <div class="combo-arrow">▾</div>
+
+            <div
+              id="dropdown"
+              class="dropdown"
+              role="listbox"
+            ></div>
+
+          </div>
+
+          <div class="helper">
+            Rental fees include a minimum 7-day charge. Additional days are prorated.
+          </div>
+
+        </div>
+
+
+        <!-- RESERVATION LENGTH -->
+
+        <div class="field">
+
+          <label for="days">
+            Reservation Length
+            <span class="label-note">Number of days</span>
+          </label>
+
+          <input
+            type="number"
+            id="days"
+            class="days-input"
+            min="1"
+            step="1"
+            placeholder="Enter number of days"
+          >
+
+          <div class="helper">
+            Reservations of 1–7 days are charged the full 7-day minimum.
+          </div>
+
+        </div>
+
+
+        <!-- RESULT -->
+
+        <div class="result" id="result">
+
+          <div class="result-label">
+            Pre-Tax Amount to Post
+          </div>
+
+          <div class="result-amount" id="resultAmount">
+            $0.00
+          </div>
+
+          <div class="result-note">
+            Post this amount directly into Track or Opera
+          </div>
+
+
+          <div class="breakdown">
+
+            <div class="breakdown-row">
+              <span class="breakdown-label">
+                Rental Item
+              </span>
+
+              <span class="breakdown-value" id="breakdownItem">
+                —
+              </span>
+            </div>
+
+
+            <div class="breakdown-row">
+              <span class="breakdown-label">
+                Reservation Length
+              </span>
+
+              <span class="breakdown-value" id="breakdownDays">
+                —
+              </span>
+            </div>
+
+
+            <div class="breakdown-row">
+              <span class="breakdown-label">
+                7-Day Minimum
+              </span>
+
+              <span class="breakdown-value" id="breakdownBase">
+                —
+              </span>
+            </div>
+
+
+            <div class="breakdown-row">
+              <span class="breakdown-label">
+                Additional Days
+              </span>
+
+              <span class="breakdown-value" id="breakdownAdditional">
+                —
+              </span>
+            </div>
+
+
+            <div class="breakdown-row">
+              <span class="breakdown-label">
+                Prorated Daily Rate
+              </span>
+
+              <span class="breakdown-value" id="breakdownDaily">
+                —
+              </span>
+            </div>
+
+          </div>
+
+
+          <button class="copy-button" id="copyButton">
+            Copy Amount
+          </button>
+
+        </div>
+
+
+        <div class="footer-note">
+          All amounts shown are pre-tax. Taxes are calculated by Track or Opera when the charge is posted.
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <script>
+
+    /*
+     * ============================================================
+     * RENTAL ITEM DATA
+     * ============================================================
+     *
+     * Each price represents the 7-day minimum fee.
+     *
+     * To add a new rental item later:
+     *
+     * {
+     *   name: "Item Name",
+     *   price: 100,
+     *   category: "Category Name"
+     * }
+     *
+     * ============================================================
+     */
+
+    const rentalItems = [
+
+      // BABY & CHILD
+
+      { name: "Baby Bath", price: 35, category: "Baby & Child" },
+      { name: "Baby Exerciser", price: 50, category: "Baby & Child" },
+      { name: "Baby Monitor", price: 40, category: "Baby & Child" },
+      { name: "Baby Play Mat", price: 40, category: "Baby & Child" },
+      { name: "Bed Rails", price: 35, category: "Baby & Child" },
+      { name: "Booster Car Seat", price: 35, category: "Baby & Child" },
+      { name: "Booster High Chair", price: 40, category: "Baby & Child" },
+      { name: "Bouncy Seat", price: 40, category: "Baby & Child" },
+      { name: "Car Seat Rental", price: 75, category: "Baby & Child" },
+      { name: "Child Gate", price: 35, category: "Baby & Child" },
+      { name: "City Mini Double Stroller", price: 125, category: "Baby & Child" },
+      { name: "Crib", price: 95, category: "Baby & Child" },
+      { name: "Double Stroller", price: 95, category: "Baby & Child" },
+      { name: "High Chair", price: 50, category: "Baby & Child" },
+      { name: "Infant Bassinet", price: 65, category: "Baby & Child" },
+      { name: "Pack-n-Play", price: 55, category: "Baby & Child" },
+      { name: "Pack-n-Play Mattress/Bedding", price: 15, category: "Baby & Child" },
+      { name: "Single Stroller", price: 75, category: "Baby & Child" },
+      { name: "Step Stool", price: 35, category: "Baby & Child" },
+      { name: "Stroller Rain Cover (Double)", price: 20, category: "Baby & Child" },
+      { name: "Stroller Rain Cover (Single)", price: 15, category: "Baby & Child" },
+      { name: "Tub of Toys", price: 50, category: "Baby & Child" },
+
+
+      // MOBILITY & MEDICAL
+
+      { name: "4ft. Wheelchair Ramp", price: 85, category: "Mobility & Medical" },
+      { name: "Bath Bench", price: 60, category: "Mobility & Medical" },
+      { name: "Medical Toilet Seat", price: 65, category: "Mobility & Medical" },
+      { name: "Mobility Scooter", price: 295, category: "Mobility & Medical" },
+      { name: "Rollaway Bed (w/Linen)", price: 105, category: "Mobility & Medical" },
+      { name: "Wheelchair", price: 95, category: "Mobility & Medical" },
+
+
+      // KITCHEN & APPLIANCES
+
+      { name: "Chest Freezer 5 cu ft", price: 155, category: "Kitchen & Appliances" },
+      { name: "Coffee Urn 10 Cup", price: 45, category: "Kitchen & Appliances" },
+      { name: "Coffee Urn 45 Cup", price: 60, category: "Kitchen & Appliances" },
+      { name: "Fridge 18 cu ft", price: 235, category: "Kitchen & Appliances" },
+      { name: "Fridge 25 cu ft", price: 285, category: "Kitchen & Appliances" },
+      { name: "Keurig Coffee Maker", price: 60, category: "Kitchen & Appliances" },
+
+
+      // HOLIDAY
+
+      { name: "Christmas Tree 12ft Live", price: 455, category: "Holiday" },
+      { name: "Christmas Tree 7ft Live", price: 205, category: "Holiday" },
+      { name: "Christmas Tree 9ft Live", price: 275, category: "Holiday" },
+      { name: "Christmas Tree 7ft Fake Pre-Lit", price: 185, category: "Holiday" },
+      { name: "Christmas Tree Decor Kit 12ft", price: 125, category: "Holiday" },
+      { name: "Christmas Tree Decor Kit 7ft", price: 75, category: "Holiday" },
+      { name: "Christmas Tree Decor Kit 9ft", price: 105, category: "Holiday" },
+      { name: "Christmas Tree Decor Service 12ft", price: 125, category: "Holiday" },
+      { name: "Christmas Tree Decor Service 7ft", price: 75, category: "Holiday" },
+      { name: "Christmas Tree Decor Service 9ft", price: 105, category: "Holiday" },
+      { name: "Christmas Wreath", price: 95, category: "Holiday" },
+
+
+      // FURNITURE & GENERAL
+
+      { name: "Folding Chairs (Set of 2)", price: 25, category: "Furniture & General" },
+      { name: "Folding Tables 6ft", price: 75, category: "Furniture & General" },
+      { name: "Room Safe", price: 75, category: "Furniture & General" },
+      { name: "Sun Lounger", price: 35, category: "Furniture & General" },
+
+
+      // POOL & OUTDOOR
+
+      { name: "Cooling Fan Tower", price: 50, category: "Pool & Outdoor" },
+      { name: "Patio Heater", price: 105, category: "Pool & Outdoor" },
+      { name: "Pool Hoop & Basketball (VRO Only)", price: 65, category: "Pool & Outdoor" },
+
+
+      // SPECIALTY & RECREATION
+
+      { name: "Kosher Grill Large", price: 385, category: "Specialty & Recreation" },
+      { name: "Kosher Grill Medium", price: 325, category: "Specialty & Recreation" },
+      { name: "Poker Bundle (Tbl/8Chr/Poker Set)", price: 180, category: "Specialty & Recreation" }
+
+    ];
+
+
+    /*
+     * ============================================================
+     * ELEMENTS
+     * ============================================================
+     */
+
+    const searchInput =
+      document.getElementById("rentalSearch");
+
+    const dropdown =
+      document.getElementById("dropdown");
+
+    const daysInput =
+      document.getElementById("days");
+
+    const result =
+      document.getElementById("result");
+
+    const resultAmount =
+      document.getElementById("resultAmount");
+
+    const copyButton =
+      document.getElementById("copyButton");
+
+    const breakdownItem =
+      document.getElementById("breakdownItem");
+
+    const breakdownDays =
+      document.getElementById("breakdownDays");
+
+    const breakdownBase =
+      document.getElementById("breakdownBase");
+
+    const breakdownAdditional =
+      document.getElementById("breakdownAdditional");
+
+    const breakdownDaily =
+      document.getElementById("breakdownDaily");
+
+
+    let selectedItem = null;
+
+    let highlightedIndex = -1;
+
+
+    /*
+     * ============================================================
+     * MONEY FORMAT
+     * ============================================================
+     */
+
+    function money(value) {
+
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD"
+      }).format(value);
+
+    }
+
+
+    /*
+     * ============================================================
+     * RENDER DROPDOWN
+     * ============================================================
+     */
+
+    function renderDropdown(filter = "") {
+
+      const normalizedFilter =
+        filter.trim().toLowerCase();
+
+      const filtered =
+        rentalItems.filter(item =>
+          item.name.toLowerCase().includes(normalizedFilter)
+        );
+
+
+      dropdown.innerHTML = "";
+
+      highlightedIndex = -1;
+
+
+      if (filtered.length === 0) {
+
+        dropdown.innerHTML = `
+          <div class="no-results">
+            No rental items found.
+          </div>
+        `;
+
+        dropdown.classList.add("open");
+
+        return;
+      }
+
+
+      let currentCategory = null;
+
+      let optionIndex = 0;
+
+
+      filtered.forEach(item => {
+
+        if (item.category !== currentCategory) {
+
+          currentCategory = item.category;
+
+
+          const header =
+            document.createElement("div");
+
+          header.className = "category-header";
+
+          header.textContent =
+            currentCategory;
+
+          dropdown.appendChild(header);
+
+        }
+
+
+        const option =
+          document.createElement("div");
+
+        option.className = "option";
+
+        option.setAttribute(
+          "role",
+          "option"
+        );
+
+        option.dataset.index =
+          optionIndex;
+
+
+        option.innerHTML = `
+          <span class="option-name">
+            ${item.name}
+          </span>
+
+          <span class="option-price">
+            ${money(item.price)}
+          </span>
+        `;
+
+
+        option.addEventListener(
+          "mousedown",
+          function(event) {
+
+            event.preventDefault();
+
+            selectItem(item);
+
+          }
+        );
+
+
+        dropdown.appendChild(option);
+
+        optionIndex++;
+
+      });
+
+
+      dropdown.classList.add("open");
+
+      searchInput.setAttribute(
+        "aria-expanded",
+        "true"
+      );
+
+    }
+
+
+    /*
+     * ============================================================
+     * SELECT RENTAL ITEM
+     * ============================================================
+     */
+
+    function selectItem(item) {
+
+      selectedItem = item;
+
+      searchInput.value =
+        item.name;
+
+      dropdown.classList.remove("open");
+
+      searchInput.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+      calculate();
+
+    }
+
+
+    /*
+     * ============================================================
+     * SEARCH EVENTS
+     * ============================================================
+     */
+
+    searchInput.addEventListener(
+      "focus",
+      function() {
+
+        renderDropdown(
+          searchInput.value
+        );
+
+      }
+    );
+
+
+    searchInput.addEventListener(
+      "input",
+      function() {
+
+        selectedItem = null;
+
+        renderDropdown(
+          searchInput.value
+        );
+
+        result.classList.remove(
+          "visible"
+        );
+
+      }
+    );
+
+
+    /*
+     * Keyboard navigation
+     */
+
+    searchInput.addEventListener(
+      "keydown",
+      function(event) {
+
+        const options =
+          dropdown.querySelectorAll(
+            ".option"
+          );
+
+
+        if (
+          !dropdown.classList.contains(
+            "open"
+          )
+        ) {
+          return;
+        }
+
+
+        if (
+          event.key === "ArrowDown"
+        ) {
+
+          event.preventDefault();
+
+          highlightedIndex =
+            Math.min(
+              highlightedIndex + 1,
+              options.length - 1
+            );
+
+          updateHighlight(options);
+
+        }
+
+
+        else if (
+          event.key === "ArrowUp"
+        ) {
+
+          event.preventDefault();
+
+          highlightedIndex =
+            Math.max(
+              highlightedIndex - 1,
+              0
+            );
+
+          updateHighlight(options);
+
+        }
+
+
+        else if (
+          event.key === "Enter"
+        ) {
+
+          event.preventDefault();
+
+
+          if (
+            highlightedIndex >= 0 &&
+            options[highlightedIndex]
+          ) {
+
+            const itemName =
+              options[
+                highlightedIndex
+              ]
+              .querySelector(
+                ".option-name"
+              )
+              .textContent;
+
+
+            const item =
+              rentalItems.find(
+                rental =>
+                  rental.name ===
+                  itemName
+              );
+
+
+            if (item) {
+
+              selectItem(item);
+
+            }
+
+          }
+
+        }
+
+
+        else if (
+          event.key === "Escape"
+        ) {
+
+          dropdown.classList.remove(
+            "open"
+          );
+
+          searchInput.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+        }
+
+      }
+    );
+
+
+    /*
+     * Highlight keyboard selection
+     */
+
+    function updateHighlight(options) {
+
+      options.forEach(
+        (option, index) => {
+
+          option.classList.toggle(
+            "highlighted",
+            index ===
+              highlightedIndex
+          );
+
+        }
+      );
+
+
+      if (
+        options[highlightedIndex]
+      ) {
+
+        options[
+          highlightedIndex
+        ].scrollIntoView({
+          block: "nearest"
+        });
+
+      }
+
+    }
+
+
+    /*
+     * Close dropdown when clicking elsewhere
+     */
+
+    document.addEventListener(
+      "click",
+      function(event) {
+
+        const combo =
+          document.getElementById(
+            "combo"
+          );
+
+
+        if (
+          !combo.contains(
+            event.target
+          )
+        ) {
+
+          dropdown.classList.remove(
+            "open"
+          );
+
+          searchInput.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+        }
+
+      }
+    );
+
+
+    /*
+     * ============================================================
+     * CALCULATE FEE
+     * ============================================================
+     *
+     * 1–7 days:
+     *
+     *     Charge = 7-day minimum
+     *
+     *
+     * 8+ days:
+     *
+     *     Charge =
+     *     7-day minimum
+     *     +
+     *     additional days × daily rate
+     *
+     *
+     * Daily rate:
+     *
+     *     7-day minimum ÷ 7
+     *
+     * ============================================================
+     */
+
+    function calculate() {
+
+      if (!selectedItem) {
+
+        result.classList.remove(
+          "visible"
+        );
+
+        return;
+
+      }
+
+
+      const days =
+        parseInt(
+          daysInput.value,
+          10
+        );
+
+
+      if (
+        !days ||
+        days < 1
+      ) {
+
+        result.classList.remove(
+          "visible"
+        );
+
+        return;
+
+      }
+
+
+      const baseFee =
+        selectedItem.price;
+
+
+      const dailyRate =
+        baseFee / 7;
+
+
+      const additionalDays =
+        Math.max(
+          days - 7,
+          0
+        );
+
+
+      const additionalFee =
+        additionalDays *
+        dailyRate;
+
+
+      const total =
+        baseFee +
+        additionalFee;
+
+
+      /*
+       * Round only the final amount
+       * to avoid cumulative rounding errors.
+       */
+
+      const finalAmount =
+        Math.round(
+          (total + Number.EPSILON) *
+          100
+        ) / 100;
+
+
+      resultAmount.textContent =
+        money(finalAmount);
+
+
+      breakdownItem.textContent =
+        selectedItem.name;
+
+
+      breakdownDays.textContent =
+        `${days} ${
+          days === 1
+            ? "day"
+            : "days"
+        }`;
+
+
+      breakdownBase.textContent =
+        money(baseFee);
+
+
+      breakdownAdditional.textContent =
+        additionalDays > 0
+          ? `${additionalDays} ${
+              additionalDays === 1
+                ? "day"
+                : "days"
+            } × ${money(dailyRate)}`
+          : "None";
+
+
+      breakdownDaily.textContent =
+        money(dailyRate);
+
+
+      result.classList.add(
+        "visible"
+      );
+
+    }
+
+
+    daysInput.addEventListener(
+      "input",
+      calculate
+    );
+
+
+    /*
+     * ============================================================
+     * COPY AMOUNT
+     * ============================================================
+     */
+
+    copyButton.addEventListener(
+      "click",
+      async function() {
+
+        const amount =
+          resultAmount.textContent;
+
+
+        try {
+
+          await navigator.clipboard
+            .writeText(amount);
+
+
+          copyButton.textContent =
+            "Copied!";
+
+          copyButton.classList.add(
+            "copied"
+          );
+
+
+          setTimeout(
+            () => {
+
+              copyButton.textContent =
+                "Copy Amount";
+
+              copyButton.classList.remove(
+                "copied"
+              );
+
+            },
+            1800
+          );
+
+        }
+
+
+        catch (error) {
+
+          /*
+           * Fallback for browsers
+           * where Clipboard API
+           * is unavailable.
+           */
+
+          const temporaryInput =
+            document.createElement(
+              "input"
+            );
+
+
+          temporaryInput.value =
+            amount;
+
+
+          document.body.appendChild(
+            temporaryInput
+          );
+
+
+          temporaryInput.select();
+
+
+          document.execCommand(
+            "copy"
+          );
+
+
+          temporaryInput.remove();
+
+
+          copyButton.textContent =
+            "Copied!";
+
+          copyButton.classList.add(
+            "copied"
+          );
+
+
+          setTimeout(
+            () => {
+
+              copyButton.textContent =
+                "Copy Amount";
+
+              copyButton.classList.remove(
+                "copied"
+              );
+
+            },
+            1800
+          );
+
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
