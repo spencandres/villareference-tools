@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>VillaReference Tools</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      background: #ffffff;
+      color: #37352f;
+      font-family:
+        ui-sans-serif,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .header {
+      margin-bottom: 32px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(55, 53, 47, 0.5);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.2;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+
+    .description {
+      max-width: 560px;
+      margin: 10px 0 0;
+      font-size: 15px;
+      line-height: 1.5;
+      color: rgba(55, 53, 47, 0.65);
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(55, 53, 47, 0.65);
+    }
+
+    .tools {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .tool {
+      display: block;
+      padding: 18px;
+      color: inherit;
+      text-decoration: none;
+      border: 1px solid rgba(55, 53, 47, 0.14);
+      border-radius: 10px;
+      background: #ffffff;
+      transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.15s ease;
+    }
+
+    .tool:hover {
+      border-color: rgba(55, 53, 47, 0.28);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      transform: translateY(-1px);
+    }
+
+    .tool-title {
+      margin: 0 0 5px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .tool-description {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.45;
+      color: rgba(55, 53, 47, 0.6);
+    }
+
+    @media (max-width: 500px) {
+      body {
+        padding: 28px 16px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .tools {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="container">
+
+    <header class="header">
+      <p class="eyebrow">VillaReference</p>
+
+      <h1>GE Tools</h1>
+
+      <p class="description">
+        Interactive tools and calculators for the Villatel Guest Experience team.
+      </p>
+    </header>
+
+    <section>
+      <h2 class="section-title">Calculators</h2>
+
+      <div class="tools">
+
+        <a class="tool" href="./lco-eci/">
+          <h3 class="tool-title">LCO / ECI Fee Calculator</h3>
+
+          <p class="tool-description">
+            Calculate the early check-in or late check-out fee based on the reservation's average nightly rent.
+          </p>
+        </a>
+
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>
